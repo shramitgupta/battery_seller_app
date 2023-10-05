@@ -48,11 +48,15 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     required String label,
     required VoidCallback onPressed,
   }) {
+    final Size size = MediaQuery.of(context).size;
+    final double heightRatio = size.height / 915;
+    final double widthRatio = size.width / 412;
+    final double fontSize = 14.0 * heightRatio * widthRatio;
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.red[300],
-        backgroundColor: Colors.white, // Button text color
+        primary: Colors.white,
+        onPrimary: Colors.red[300], // Button text color
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),
@@ -63,19 +67,17 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         children: [
           Icon(
             icon,
-            size: 36.0,
+            size: 36.0 * MediaQuery.of(context).textScaleFactor,
             color: Colors.red[300], // Icon color
           ),
-          SizedBox(height: 8.0),
-          FittedBox(
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+          const SizedBox(height: 8.0),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
             ),
           ),
         ],
@@ -85,6 +87,10 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+    final double heightRatio = size.height / 915;
+    final double widthRatio = size.width / 412;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red[300],
@@ -95,7 +101,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         title: Text(
           "Manager",
           style: TextStyle(
-            fontSize: 26.0,
+            fontSize: 26 * widthRatio * heightRatio,
             color: Colors.white, // Change title text color
           ),
         ),
@@ -105,7 +111,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             onPressed: logOut,
             icon: Icon(
               Icons.logout,
-              size: 32.0,
+              size: 32 * widthRatio * heightRatio,
               color: Colors.white, // Change icon color
             ),
           ),
