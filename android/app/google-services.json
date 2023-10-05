@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1045252634080",
+    "project_id": "batteryapp-3e3c5",
+    "storage_bucket": "batteryapp-3e3c5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1045252634080:android:517b95f35a7210b427e785",
+        "android_client_info": {
+          "package_name": "com.example.battery_service_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDj5Wv90zUYHqsCPtA1Vhf98cxv2Fa50IA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
