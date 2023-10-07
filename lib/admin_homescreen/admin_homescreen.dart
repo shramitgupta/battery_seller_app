@@ -55,8 +55,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        primary: Colors.white,
-        onPrimary: Colors.red[300], // Button text color
+        foregroundColor: Colors.red[300],
+        backgroundColor: Colors.white, // Button text color
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),

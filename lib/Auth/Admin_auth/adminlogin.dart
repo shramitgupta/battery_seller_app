@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:battery_service_app/Auth/Admin_auth/admin_signup.dart';
 import 'package:battery_service_app/Auth/employee_auth/employee_login.dart';
 import 'package:battery_service_app/admin_homescreen/admin_homescreen.dart';
@@ -82,7 +84,8 @@ class _AdminLoginState extends State<AdminLogin> {
         } else if (ex.code == 'wrong-password') {
           errorText = 'Wrong password.';
         } else {
-          errorText = 'An error occurred: ${ex.message}';
+          errorText = 'An error occurred';
+          log(ex.message.toString());
         }
       });
     }
