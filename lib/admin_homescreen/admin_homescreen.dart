@@ -1,4 +1,5 @@
 import 'package:battery_service_app/Auth/Admin_auth/adminlogin.dart';
+import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_salesform.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -128,7 +129,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               icon: Icons.shopping_cart,
               label: "Sales Form",
               onPressed: () {
-                // Add your action for button 1
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AdminSalesForm(),
+                  ),
+                );
               },
             ),
             buildGridButton(
