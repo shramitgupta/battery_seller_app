@@ -1,5 +1,7 @@
 import 'package:battery_service_app/Auth/Admin_auth/adminlogin.dart';
+import 'package:battery_service_app/admin_homescreen/admin_homescreen/Admin_todayswork.dart';
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_salesform.dart';
+import 'package:battery_service_app/admin_homescreen/admin_homescreen/employee_register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -141,7 +143,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               icon: Icons.access_time,
               label: "Today's Work",
               onPressed: () {
-                // Add your action for button 2
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AdminTodaysWorks(),
+                  ),
+                );
               },
             ),
             buildGridButton(
@@ -176,7 +183,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               icon: Icons.person_add,
               label: "Employee Registration",
               onPressed: () {
-                // Add your action for button 7
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EmployeeRegister(),
+                  ),
+                );
               },
             ),
             buildGridButton(

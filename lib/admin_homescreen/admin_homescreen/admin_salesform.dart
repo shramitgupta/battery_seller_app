@@ -20,7 +20,6 @@ class _AdminSalesFormState extends State<AdminSalesForm> {
   TextEditingController productnameController = TextEditingController();
 
   bool _isUploading = false;
-  String _uploadMessage = '';
 
   @override
   void initState() {
@@ -144,11 +143,11 @@ class _AdminSalesFormState extends State<AdminSalesForm> {
                 SizedBox(
                   height: 20 * heightRatio,
                 ),
-                const Text(
+                Text(
                   'Buyer  Name',
                   style: TextStyle(
-                    color: Color(0xFF260446),
-                    fontSize: 14,
+                    color: const Color(0xFF260446),
+                    fontSize: 14 * widthRatio * heightRatio,
                     fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700,
                     height: 0,
@@ -183,14 +182,13 @@ class _AdminSalesFormState extends State<AdminSalesForm> {
                 SizedBox(
                   height: 5 * heightRatio,
                 ),
-                const Text(
+                Text(
                   'Phone No',
                   style: TextStyle(
-                    color: Color(0xFF260446),
-                    fontSize: 14,
+                    color: const Color(0xFF260446),
+                    fontSize: 14 * widthRatio * heightRatio,
                     fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700,
-                    height: 0,
                   ),
                 ),
                 SizedBox(
@@ -225,11 +223,11 @@ class _AdminSalesFormState extends State<AdminSalesForm> {
                 SizedBox(
                   height: 5 * heightRatio,
                 ),
-                const Text(
+                Text(
                   'Address',
                   style: TextStyle(
-                    color: Color(0xFF260446),
-                    fontSize: 14,
+                    color: const Color(0xFF260446),
+                    fontSize: 14 * widthRatio * heightRatio,
                     fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700,
                     height: 0,
@@ -261,21 +259,20 @@ class _AdminSalesFormState extends State<AdminSalesForm> {
                     ),
                   ),
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 16 * widthRatio * heightRatio,
                   ),
                   maxLines: 4,
                 ),
                 SizedBox(
                   height: 5 * heightRatio,
                 ),
-                const Text(
+                Text(
                   'Area',
                   style: TextStyle(
-                    color: Color(0xFF260446),
-                    fontSize: 14,
+                    color: const Color(0xFF260446),
+                    fontSize: 14 * widthRatio * heightRatio,
                     fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700,
-                    height: 0,
                   ),
                 ),
                 SizedBox(
@@ -307,14 +304,13 @@ class _AdminSalesFormState extends State<AdminSalesForm> {
                 SizedBox(
                   height: 5 * heightRatio,
                 ),
-                const Text(
+                Text(
                   'Product Name',
                   style: TextStyle(
-                    color: Color(0xFF260446),
-                    fontSize: 14,
+                    color: const Color(0xFF260446),
+                    fontSize: 14 * widthRatio * heightRatio,
                     fontFamily: 'Nunito',
                     fontWeight: FontWeight.w700,
-                    height: 0,
                   ),
                 ),
                 SizedBox(
@@ -353,16 +349,16 @@ class _AdminSalesFormState extends State<AdminSalesForm> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'MFD',
                             style: TextStyle(
-                              color: Color(0xFF260446),
-                              fontSize: 14,
+                              color: const Color(0xFF260446),
+                              fontSize: 14 * widthRatio * heightRatio,
                               fontFamily: 'Nunito',
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 5,
                           ),
                           TextFormField(
@@ -409,24 +405,23 @@ class _AdminSalesFormState extends State<AdminSalesForm> {
                       ),
                     ),
                     SizedBox(
-                      width: 5,
+                      width: 5 * widthRatio,
                     ),
                     Flexible(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Purchase Date',
                             style: TextStyle(
-                              color: Color(0xFF260446),
-                              fontSize: 14,
+                              color: const Color(0xFF260446),
+                              fontSize: 14 * widthRatio * heightRatio,
                               fontFamily: 'Nunito',
                               fontWeight: FontWeight.w700,
-                              height: 0,
                             ),
                           ),
                           SizedBox(
-                            height: 5,
+                            height: 5 * widthRatio,
                           ),
                           TextFormField(
                             controller: purchaseDateController,
@@ -456,24 +451,23 @@ class _AdminSalesFormState extends State<AdminSalesForm> {
                       ),
                     ),
                     SizedBox(
-                      width: 5,
+                      width: 5 * widthRatio,
                     ),
                     Flexible(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Next Service',
                             style: TextStyle(
-                              color: Color(0xFF260446),
-                              fontSize: 14,
+                              color: const Color(0xFF260446),
+                              fontSize: 14 * widthRatio * heightRatio,
                               fontFamily: 'Nunito',
                               fontWeight: FontWeight.w700,
-                              height: 0,
                             ),
                           ),
                           SizedBox(
-                            height: 5,
+                            height: 5 * widthRatio,
                           ),
                           TextFormField(
                             controller: nextServiceController,
@@ -508,7 +502,12 @@ class _AdminSalesFormState extends State<AdminSalesForm> {
                   child: Align(
                     alignment: Alignment.bottomCenter,
                     child: _isUploading
-                        ? Center(child: CircularProgressIndicator())
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: const CircularProgressIndicator(
+                              color: Colors.redAccent,
+                            ),
+                          )
                         : ClickableButton1(
                             widthRatio: widthRatio,
                             heightRatio: heightRatio,
