@@ -218,9 +218,17 @@ class _AdminSalesFormState extends State<AdminSalesForm>
         purchaseDateController.text.isNotEmpty &&
         nextServiceController.text.isNotEmpty) {
       // Parse the date strings into DateTime objects
-      DateTime mfdDate = DateTime.parse(mfdController.text);
-      DateTime purchaseDate = DateTime.parse(purchaseDateController.text);
-      DateTime nextServiceDate = DateTime.parse(nextServiceController.text);
+      final String productName = productnameController.text;
+      final String mfdString = mfdController.text;
+      final String purchaseDateString = purchaseDateController.text;
+      final String nextServiceDateString = nextServiceController.text;
+
+      // Parse date strings to DateTime objects
+      DateTime mfdDate = DateFormat('dd-MM-yyyy').parse(mfdString);
+      DateTime purchaseDate =
+          DateFormat('dd-MM-yyyy').parse(purchaseDateString);
+      DateTime nextServiceDate =
+          DateFormat('dd-MM-yyyy').parse(nextServiceDateString);
 
       productDataList.add({
         'product_name': productnameController.text,
@@ -620,10 +628,11 @@ class _AdminSalesFormState extends State<AdminSalesForm>
                                   lastDate: DateTime.now(),
                                 ).then((selectedDate) {
                                   if (selectedDate != null) {
+                                    String formattedDate =
+                                        DateFormat('dd-MM-yyyy')
+                                            .format(selectedDate);
                                     setState(() {
-                                      mfdController.text = selectedDate
-                                          .toString()
-                                          .substring(0, 10);
+                                      mfdController.text = formattedDate;
                                     });
                                   }
                                 });

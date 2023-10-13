@@ -253,7 +253,6 @@ class AddProductDialog extends StatefulWidget {
 }
 
 class _AddProductDialogState extends State<AddProductDialog> {
-  late TextEditingController productNameController;
   late DateTime mfdDate;
   late DateTime purchaseDate;
   late DateTime nextServiceDate;
@@ -261,7 +260,6 @@ class _AddProductDialogState extends State<AddProductDialog> {
   @override
   void initState() {
     super.initState();
-    productNameController = TextEditingController();
     mfdDate = DateTime.now();
     purchaseDate = DateTime.now();
     nextServiceDate =
@@ -269,35 +267,18 @@ class _AddProductDialogState extends State<AddProductDialog> {
   }
 
   @override
-  void dispose() {
-    productNameController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _selectDate(BuildContext context, DateTime initialDate,
-      Function(DateTime) onDateSelected) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != initialDate) {
-      setState(() {
-        onDateSelected(picked);
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // Create a new instance of TextEditingController
+    TextEditingController productNameController = TextEditingController();
+
     return AlertDialog(
       title: Text('Add Product Data'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           TextField(
-            controller: productNameController,
+            controller:
+                productNameController, // Set the controller for the product name field
             decoration: InputDecoration(labelText: 'Product Name'),
           ),
           ListTile(
@@ -332,7 +313,8 @@ class _AddProductDialogState extends State<AddProductDialog> {
       actions: <Widget>[
         TextButton(
           onPressed: () {
-            saveProductData(widget.id);
+            saveProductData(
+                widget.id, productNameController.text); // Pass the product name
             Navigator.of(context).pop();
           },
           child: Text('Save'),
@@ -347,26 +329,35 @@ class _AddProductDialogState extends State<AddProductDialog> {
     );
   }
 
-  void saveProductData(String id) async {
-    String productName = productNameController.text;
-    String mfdString = DateFormat('dd-MM-yyyy')
-        .format(mfdDate); // Format date and time to string
-    String purchaseDateString = DateFormat('dd-MM-yyyy')
-        .format(purchaseDate); // Format date and time to string
-    String nextServiceDateString = DateFormat('dd-MM-yyyy')
-        .format(nextServiceDate); // Format date and time to string
+  Future<void> _selectDate(BuildContext context, DateTime initialDate,
+      Function(DateTime) onDateSelected) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != initialDate) {
+      setState(() {
+        onDateSelected(picked);
+      });
+    }
+  }
+
+  void saveProductData(String id, String productName) async {
+    // Get the values from the fields and use them
+    String mfdString = DateFormat('dd-MM-yyyy').format(mfdDate);
+    String purchaseDateString = DateFormat('dd-MM-yyyy').format(purchaseDate);
+    String nextServiceDateString =
+        DateFormat('dd-MM-yyyy').format(nextServiceDate);
 
     await FirebaseFirestore.instance.collection('product_data').add({
       'sale_id': id,
-      'product_name': productName,
-      'mfd': Timestamp.fromDate(mfdDate), // Store as Firestore Timestamp
-      'purchase_date':
-          Timestamp.fromDate(purchaseDate), // Store as Firestore Timestamp
-      'next_service':
-          Timestamp.fromDate(nextServiceDate), // Store as Firestore Timestamp
+      'product_name': productName, // Use the passed product name
+      'mfd': Timestamp.fromDate(mfdDate),
+      'purchase_date': Timestamp.fromDate(purchaseDate),
+      'next_service': Timestamp.fromDate(nextServiceDate),
     });
-
-    productNameController.clear();
 
     setState(() {});
   }
