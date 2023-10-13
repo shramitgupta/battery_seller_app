@@ -4,11 +4,12 @@ class ClickableButton1 extends StatelessWidget {
   final double widthRatio;
   final double heightRatio;
   final VoidCallback onPressed;
-
+  final String text;
   ClickableButton1({
     required this.widthRatio,
     required this.heightRatio,
     required this.onPressed,
+    required this.text,
   });
 
   @override
@@ -32,7 +33,7 @@ class ClickableButton1 extends StatelessWidget {
           elevation: 8,
         ),
         child: Text(
-          'Submit',
+          text,
           style: TextStyle(
             //color: const Color(0xFF121212),
             color: Colors.white,
