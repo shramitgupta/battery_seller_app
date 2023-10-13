@@ -2,6 +2,8 @@ import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_alre
 import 'package:battery_service_app/button/submit.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 
 class AdminSalesForm extends StatefulWidget {
   const AdminSalesForm({Key? key}) : super(key: key);
@@ -32,12 +34,14 @@ class _AdminSalesFormState extends State<AdminSalesForm>
     super.initState();
 
     // Initialize the "Purchase Date" with the current date
-    purchaseDateController.text = DateTime.now().toString().substring(0, 10);
+    purchaseDateController.text =
+        DateFormat('dd-MM-yyyy').format(DateTime.now());
 
     // Calculate and set the "Next Service" date 6 months from the current date
     DateTime currentDate = DateTime.now();
     DateTime nextServiceDate = currentDate.add(Duration(days: 180));
-    nextServiceController.text = nextServiceDate.toString().substring(0, 10);
+    nextServiceController.text =
+        DateFormat('dd-MM-yyyy').format(nextServiceDate);
 
     _tabController = TabController(length: 2, vsync: this);
   }
@@ -60,6 +64,7 @@ class _AdminSalesFormState extends State<AdminSalesForm>
 
   Future<void> _uploadData() async {
     // Check if any of the required fields are empty
+
     if (buyernameController.text.isEmpty ||
         phonenoController.text.isEmpty ||
         addressController.text.isEmpty ||
@@ -79,11 +84,18 @@ class _AdminSalesFormState extends State<AdminSalesForm>
       setState(() {
         _isLoading = false;
       });
-
+      final existingUserDetails =
+          await _getExistingUserDetails(phonenoController.text);
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => AdminAlreadyExist(),
+          builder: (context) => AdminAlreadyExist(
+            id: existingUserDetails['sale_id'],
+            address: existingUserDetails['address'],
+            area: existingUserDetails['area'],
+            buyerName: existingUserDetails['buyer_name'],
+            phoneNumber: existingUserDetails['phone_no'],
+          ),
         ),
       );
     } else {
@@ -158,6 +170,25 @@ class _AdminSalesFormState extends State<AdminSalesForm>
     }
   }
 
+  Future<Map<String, dynamic>> _getExistingUserDetails(
+      String phoneNumber) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('saledata')
+          .where('phone_no', isEqualTo: phoneNumber)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final userData =
+            querySnapshot.docs.first.data() as Map<String, dynamic>;
+        return userData;
+      }
+    } catch (e) {
+      print('Error fetching existing user details: $e');
+    }
+    return {};
+  }
+
   Future<bool> _isPhoneNumberExists(String phoneNumber) async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
@@ -186,16 +217,23 @@ class _AdminSalesFormState extends State<AdminSalesForm>
         mfdController.text.isNotEmpty &&
         purchaseDateController.text.isNotEmpty &&
         nextServiceController.text.isNotEmpty) {
+      // Parse the date strings into DateTime objects
+      DateTime mfdDate = DateTime.parse(mfdController.text);
+      DateTime purchaseDate = DateTime.parse(purchaseDateController.text);
+      DateTime nextServiceDate = DateTime.parse(nextServiceController.text);
+
       productDataList.add({
         'product_name': productnameController.text,
-        'mfd': mfdController.text,
-        'purchase_date': purchaseDateController.text,
-        'next_service': nextServiceController.text,
+        'mfd': mfdDate,
+        'purchase_date': purchaseDate,
+        'next_service': nextServiceDate,
       });
 
       setState(() {
         productnameController.clear();
         mfdController.clear();
+        // purchaseDateController.clear();
+        //nextServiceController.clear();
         productFieldCount++;
       });
     } else {
@@ -445,31 +483,52 @@ class _AdminSalesFormState extends State<AdminSalesForm>
                   Expanded(
                     child: Align(
                       alignment: Alignment.bottomCenter,
-                      child: ClickableButton1(
-                        widthRatio: widthRatio,
-                        heightRatio: heightRatio,
-                        text: 'Next',
-                        onPressed: () async {
-                          if (validatePage1Fields()) {
-                            // All Page 1 fields are filled, check if phone number exists
-                            if (await _isPhoneNumberExists(
-                                phonenoController.text)) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AdminAlreadyExist(),
-                                ),
-                              );
-                            } else {
-                              // Proceed to the next page or continue with data upload
-                              _tabController.animateTo(1);
-                            }
-                          } else {
-                            _showSnackbar(
-                                'Please fill in all required fields on Page 1.');
-                          }
-                        },
-                      ),
+                      child: _isLoading
+                          ? SpinKitCircle(
+                              color: Colors.blue, // Loading indicator color
+                              size: 50.0, // Loading indicator size
+                            )
+                          : ClickableButton1(
+                              widthRatio: widthRatio,
+                              heightRatio: heightRatio,
+                              text: 'Next',
+                              onPressed: () async {
+                                if (validatePage1Fields()) {
+                                  // All Page 1 fields are filled, check if the phone number exists
+                                  final doesPhoneNumberExist =
+                                      await _isPhoneNumberExists(
+                                          phonenoController.text);
+                                  Map<String, dynamic> existingUserDetails;
+                                  if (await _isPhoneNumberExists(
+                                      phonenoController.text)) {
+                                    existingUserDetails =
+                                        await _getExistingUserDetails(
+                                            phonenoController.text);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AdminAlreadyExist(
+                                          id: existingUserDetails['sale_id'],
+                                          address:
+                                              existingUserDetails['address'],
+                                          area: existingUserDetails['area'],
+                                          buyerName:
+                                              existingUserDetails['buyer_name'],
+                                          phoneNumber:
+                                              existingUserDetails['phone_no'],
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    // Proceed to the next page or continue with data upload
+                                    _tabController.animateTo(1);
+                                  }
+                                } else {
+                                  _showSnackbar(
+                                      'Please fill in all required fields on Page 1.');
+                                }
+                              },
+                            ),
                     ),
                   ),
                 ],
