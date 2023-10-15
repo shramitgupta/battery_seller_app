@@ -41,7 +41,7 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
     final taskQuery = await FirebaseFirestore.instance
         .collection('Task')
         .where('product_id', isEqualTo: productDataId)
-        .where('status', isEqualTo: 'Task Assigned')
+        .where('status', isEqualTo: status)
         .get();
 
     if (taskQuery.docs.isNotEmpty) {
@@ -65,61 +65,6 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
         ));
       }
     });
-  }
-
-  void createTask() async {
-    if (selectedEmployeeData != null) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Confirm Task Creation'),
-            content: Text('Do you want to create this task?'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('Cancel'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                child: Text('Confirm'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  _uploadTask();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please select an employee.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  void _uploadTask() async {
-    final taskDocRef = await FirebaseFirestore.instance.collection('Task').add({
-      'buyer_name': widget.buyerName,
-      'address': widget.address,
-      'area': widget.area,
-      'phone_no': widget.phoneNo,
-      'employee_id': selectedEmployeeData?.id,
-      'employee_name': selectedEmployeeData?.name,
-      'product_id': widget.productDataId,
-      'status': status,
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Task created successfully.'),
-      ),
-    );
   }
 
   @override
@@ -160,10 +105,16 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
                   fontSize: 16,
                 ),
               ),
-            ElevatedButton(
-              onPressed: createTask,
-              child: Text('Create Task'),
-            ),
+            if (assignedEmployeeName == null)
+              ElevatedButton(
+                onPressed: createTask,
+                child: Text('Create Task'),
+              )
+            else
+              ElevatedButton(
+                onPressed: reassignTask,
+                child: Text('Reassign Task'),
+              )
           ],
         ),
       ),
@@ -205,6 +156,128 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
       ),
       SizedBox(height: 12),
     ]);
+  }
+
+  void createTask() async {
+    if (selectedEmployeeData != null) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Confirm Task Creation'),
+            content: Text('Do you want to create this task?'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: Text('Confirm'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _uploadTask();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please select an employee.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void reassignTask() {
+    if (selectedEmployeeData != null) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Confirm Reassignment'),
+            content: Text('Do you want to reassign this task?'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: Text('Confirm'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _reassignTask();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please select an employee for reassignment.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _uploadTask() async {
+    final taskDocRef = await FirebaseFirestore.instance.collection('Task').add({
+      'buyer_name': widget.buyerName,
+      'address': widget.address,
+      'area': widget.area,
+      'phone_no': widget.phoneNo,
+      'employee_id': selectedEmployeeData?.id,
+      'employee_name': selectedEmployeeData?.name,
+      'product_id': widget.productDataId,
+      'status': status,
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Task created successfully.'),
+      ),
+    );
+  }
+
+  void _reassignTask() async {
+    if (selectedEmployeeData != null) {
+      final taskQuery = await FirebaseFirestore.instance
+          .collection('Task')
+          .where('product_id', isEqualTo: widget.productDataId)
+          .where('status', isEqualTo: status)
+          .get();
+
+      if (taskQuery.docs.isNotEmpty) {
+        final taskDoc = taskQuery.docs.first;
+        taskDoc.reference.update({
+          'employee_name': selectedEmployeeData?.name,
+          'employee_id': selectedEmployeeData?.id,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Task reassigned successfully.'),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Task not found for reassignment.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }
 
