@@ -27,20 +27,38 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
   String? selectedEmployee;
   final List<Employee> employees = [];
   Employee? selectedEmployeeData;
+  String? assignedEmployeeName;
+  String status = 'Task Assigned';
 
   @override
   void initState() {
     super.initState();
     fetchEmployees();
+    fetchAssignedEmployeeName(widget.productDataId);
+  }
+
+  Future<void> fetchAssignedEmployeeName(String productDataId) async {
+    final taskQuery = await FirebaseFirestore.instance
+        .collection('Task')
+        .where('product_id', isEqualTo: productDataId)
+        .where('status', isEqualTo: 'Task Assigned')
+        .get();
+
+    if (taskQuery.docs.isNotEmpty) {
+      final taskData = taskQuery.docs.first.data() as Map<String, dynamic>;
+      setState(() {
+        assignedEmployeeName = taskData['employee_name'];
+      });
+    }
   }
 
   void fetchEmployees() async {
-    QuerySnapshot employeeSnapshot =
+    final employeeQuery =
         await FirebaseFirestore.instance.collection('Employee').get();
 
     setState(() {
       employees.clear();
-      for (QueryDocumentSnapshot document in employeeSnapshot.docs) {
+      for (QueryDocumentSnapshot document in employeeQuery.docs) {
         employees.add(Employee(
           id: document.id,
           name: document['name'] ?? 'Unknown Employee',
@@ -51,7 +69,6 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
 
   void createTask() async {
     if (selectedEmployeeData != null) {
-      // Show a confirmation dialog
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -68,9 +85,7 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
               TextButton(
                 child: Text('Confirm'),
                 onPressed: () {
-                  // Close the dialog
                   Navigator.of(context).pop();
-                  // Proceed with task creation
                   _uploadTask();
                 },
               ),
@@ -79,7 +94,6 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
         },
       );
     } else {
-      // Show an error message if no employee is selected
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Please select an employee.'),
@@ -90,9 +104,7 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
   }
 
   void _uploadTask() async {
-    // Create a new task in the "Task" collection
-    DocumentReference taskDocRef =
-        await FirebaseFirestore.instance.collection('Task').add({
+    final taskDocRef = await FirebaseFirestore.instance.collection('Task').add({
       'buyer_name': widget.buyerName,
       'address': widget.address,
       'area': widget.area,
@@ -100,9 +112,9 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
       'employee_id': selectedEmployeeData?.id,
       'employee_name': selectedEmployeeData?.name,
       'product_id': widget.productDataId,
+      'status': status,
     });
 
-    // Show a snackbar to indicate the task creation
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Task created successfully.'),
@@ -141,6 +153,13 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
               ],
             ),
             SizedBox(height: 20),
+            if (assignedEmployeeName != null)
+              Text(
+                'Assigned Employee: $assignedEmployeeName',
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
             ElevatedButton(
               onPressed: createTask,
               child: Text('Create Task'),

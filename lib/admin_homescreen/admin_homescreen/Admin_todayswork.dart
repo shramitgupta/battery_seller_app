@@ -52,9 +52,16 @@ class TodaysWorksList extends StatelessWidget {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('product_data').snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
               child: CircularProgressIndicator()); // Loading indicator
+        }
+
+        if (snapshot.hasError) {
+          print("Error: ${snapshot.error}");
+          return Center(
+            child: Text("An error occurred while loading data."),
+          );
         }
 
         DateTime today = DateTime.now();
