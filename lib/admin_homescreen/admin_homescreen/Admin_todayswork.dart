@@ -95,7 +95,8 @@ class TodaysWorksList extends StatelessWidget {
             return ListTile(
               title: ProductInfoTile(product: todaysProducts[index]),
               onTap: () {
-                showBuyerInformation(context, todaysProducts[index]);
+                showBuyerInformation(context, todaysProducts[index],
+                    snapshot.data!.docs[index].id);
               },
             );
           },
@@ -105,7 +106,7 @@ class TodaysWorksList extends StatelessWidget {
   }
 
   Future<void> showBuyerInformation(
-      BuildContext context, Product product) async {
+      BuildContext context, Product product, String productDataId) async {
     DocumentSnapshot saleDataSnapshot = await FirebaseFirestore.instance
         .collection('saledata')
         .doc(product.saleId)
@@ -123,6 +124,7 @@ class TodaysWorksList extends StatelessWidget {
           address: address,
           area: area,
           phoneNo: phoneNo,
+          productDataId: productDataId,
         ),
       ));
     }
