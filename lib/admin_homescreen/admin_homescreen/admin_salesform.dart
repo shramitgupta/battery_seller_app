@@ -218,7 +218,7 @@ class _AdminSalesFormState extends State<AdminSalesForm>
         purchaseDateController.text.isNotEmpty &&
         nextServiceController.text.isNotEmpty) {
       // Parse the date strings into DateTime objects
-      final String productName = productnameController.text;
+
       final String mfdString = mfdController.text;
       final String purchaseDateString = purchaseDateController.text;
       final String nextServiceDateString = nextServiceController.text;
@@ -503,15 +503,14 @@ class _AdminSalesFormState extends State<AdminSalesForm>
                               onPressed: () async {
                                 if (validatePage1Fields()) {
                                   // All Page 1 fields are filled, check if the phone number exists
-                                  final doesPhoneNumberExist =
-                                      await _isPhoneNumberExists(
-                                          phonenoController.text);
+
                                   Map<String, dynamic> existingUserDetails;
                                   if (await _isPhoneNumberExists(
                                       phonenoController.text)) {
                                     existingUserDetails =
                                         await _getExistingUserDetails(
                                             phonenoController.text);
+                                    // ignore: use_build_context_synchronously
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -765,7 +764,7 @@ class _AdminSalesFormState extends State<AdminSalesForm>
                             ),
                           ),
                         ),
-                        Container(
+                        SizedBox(
                           height: 300 * heightRatio,
                           child: ListView(
                             children:
