@@ -29,6 +29,7 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
   Employee? selectedEmployeeData;
   String? assignedEmployeeName;
   String status = 'Task Assigned';
+  double money = 0;
 
   @override
   void initState() {
@@ -240,6 +241,7 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
       'employee_name': selectedEmployeeData?.name,
       'product_id': widget.productDataId,
       'status': status,
+      'money': money,
     });
 
     ScaffoldMessenger.of(context).showSnackBar(

@@ -1,53 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class TaskDetailsPage extends StatelessWidget {
+class TaskDetailsPage extends StatefulWidget {
   final Map<String, dynamic> data;
   final String documentId;
   final BuildContext context;
-
   TaskDetailsPage({
     required this.data,
     required this.documentId,
     required this.context,
   });
 
-  void updateStatus(BuildContext context, String status) {
-    FirebaseFirestore.instance
-        .collection('Task')
-        .doc(documentId)
-        .update({'status': status}).then((_) {
-      Navigator.of(context).pop(); // Close the dialog
-    }).catchError((error) {
-      print('Error updating status: $error');
-      Navigator.of(context).pop(); // Close the dialog
-    });
+  @override
+  _TaskDetailsPageState createState() => _TaskDetailsPageState();
+}
+
+class _TaskDetailsPageState extends State<TaskDetailsPage> {
+  String status = '';
+  double amountInput = 0.0; // To store the inputted amount
+
+  @override
+  void initState() {
+    status = widget.data['status'];
+    super.initState();
   }
 
-  void showConfirmationDialog(BuildContext context, String status) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Confirm $status?'),
-          content: Text('Are you sure you want to $status this task?'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text(status),
-              onPressed: () {
-                updateStatus(context, status);
-              },
-            ),
-          ],
+  void updateStatus(BuildContext context, String newStatus) {
+    if (newStatus == 'Done' && status == 'Reached Site') {
+      if (amountInput <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Please enter a valid amount.'),
+            backgroundColor: Colors.red,
+          ),
         );
-      },
-    );
+        return;
+      }
+      FirebaseFirestore.instance
+          .collection('Task')
+          .doc(widget.documentId)
+          .update({
+        'status': newStatus,
+        'money': amountInput,
+      }).then((_) {
+        Navigator.of(context).pop(); // Close the dialog
+        Navigator.of(context).pop(); // Pop the current page
+      }).catchError((error) {
+        print('Error updating status: $error');
+        Navigator.of(context).pop(); // Close the dialog
+      });
+    } else {
+      FirebaseFirestore.instance
+          .collection('Task')
+          .doc(widget.documentId)
+          .update({
+        'status': newStatus,
+      }).then((_) {
+        Navigator.of(context).pop(); // Close the dialog
+        Navigator.of(context).pop(); // Pop the current page
+      }).catchError((error) {
+        print('Error updating status: $error');
+        Navigator.of(context).pop(); // Close the dialog
+      });
+    }
   }
 
   @override
@@ -78,7 +93,7 @@ class TaskDetailsPage extends StatelessWidget {
                     ),
                   ),
                   subtitle: Text(
-                    data['buyer_name'],
+                    widget.data['buyer_name'],
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.blueGrey,
@@ -95,7 +110,7 @@ class TaskDetailsPage extends StatelessWidget {
                     ),
                   ),
                   subtitle: Text(
-                    data['address'],
+                    widget.data['address'],
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.blueGrey,
@@ -112,7 +127,7 @@ class TaskDetailsPage extends StatelessWidget {
                     ),
                   ),
                   subtitle: Text(
-                    data['area'],
+                    widget.data['area'],
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.blueGrey,
@@ -129,7 +144,7 @@ class TaskDetailsPage extends StatelessWidget {
                     ),
                   ),
                   subtitle: Text(
-                    data['phone_no'],
+                    widget.data['phone_no'],
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.blueGrey,
@@ -137,7 +152,7 @@ class TaskDetailsPage extends StatelessWidget {
                   ),
                 ),
                 Divider(),
-                if (data['status'] == 'Task Assigned')
+                if (status == 'Task Assigned')
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -157,7 +172,7 @@ class TaskDetailsPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                if (data['status'] == 'Accepted')
+                if (status == 'Accepted')
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -170,10 +185,17 @@ class TaskDetailsPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                if (data['status'] == 'Reached Site')
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                if (status == 'Reached Site')
+                  Column(
                     children: [
+                      TextField(
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) {
+                          setState(() {
+                            amountInput = double.tryParse(value) ?? 0.0;
+                          });
+                        },
+                      ),
                       ElevatedButton(
                         onPressed: () {
                           showConfirmationDialog(context, 'Done');
@@ -188,6 +210,32 @@ class TaskDetailsPage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void showConfirmationDialog(BuildContext context, String status) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Confirm $status?'),
+          content: Text('Are you sure you want to $status this task?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text(status),
+              onPressed: () {
+                updateStatus(context, status);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
