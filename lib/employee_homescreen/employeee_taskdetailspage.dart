@@ -180,7 +180,8 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                         onPressed: () {
                           showConfirmationDialog(context, 'Reached Site');
                         },
-                        style: ElevatedButton.styleFrom(primary: Colors.orange),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange),
                         child: Text('Reached Site'),
                       ),
                     ],
@@ -188,19 +189,36 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                 if (status == 'Reached Site')
                   Column(
                     children: [
-                      TextField(
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Enter amount received:',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      TextFormField(
                         keyboardType: TextInputType.number,
                         onChanged: (value) {
                           setState(() {
                             amountInput = double.tryParse(value) ?? 0.0;
                           });
                         },
+                        decoration: InputDecoration(
+                          labelText: 'Amount',
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.all(10),
+                        ),
                       ),
                       ElevatedButton(
                         onPressed: () {
                           showConfirmationDialog(context, 'Done');
                         },
-                        style: ElevatedButton.styleFrom(primary: Colors.blue),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.blue,
+                        ),
                         child: Text('Done'),
                       ),
                     ],
