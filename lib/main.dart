@@ -1,5 +1,7 @@
 import 'package:battery_service_app/Auth/Admin_auth/adminlogin.dart';
+import 'package:battery_service_app/Auth/employee_auth/employee_login.dart';
 import 'package:battery_service_app/admin_homescreen/admin_homescreen.dart';
+import 'package:battery_service_app/employee_homescreen/employee_homescreen.dart';
 import 'package:battery_service_app/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,9 +22,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: (FirebaseAuth.instance.currentUser != null)
-          ? const AdminHomeScreen() // UserPhoneNoLogin
-          : const AdminLogin(),
-    );
+        home: (FirebaseAuth.instance.currentUser != null)
+            // ? const AdminHomeScreen() // UserPhoneNoLogin
+            // : const AdminLogin(),
+            ? const EmployeeHomeScreen()
+            : const EmployeeLogin());
   }
 }
