@@ -22,10 +22,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: (FirebaseAuth.instance.currentUser != null)
-            // ? const AdminHomeScreen() // UserPhoneNoLogin
-            // : const AdminLogin(),
-            ? const EmployeeHomeScreen()
-            : const EmployeeLogin());
+      home: (FirebaseAuth.instance.currentUser != null)
+          ? const AdminHomeScreen() // UserPhoneNoLogin
+          : const AdminLogin(),
+      // ? const EmployeeHomeScreen()
+      // : const EmployeeLogin(),
+    );
   }
 }

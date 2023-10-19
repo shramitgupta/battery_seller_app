@@ -30,6 +30,7 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
   String? assignedEmployeeName;
   String status = 'Task Assigned';
   double money = 0;
+  String done = '';
 
   @override
   void initState() {
@@ -43,6 +44,7 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
         .collection('Task')
         .where('product_id', isEqualTo: productDataId)
         .where('status', isEqualTo: status)
+        .where('done', isNotEqualTo: 'done')
         .get();
 
     if (taskQuery.docs.isNotEmpty) {
@@ -242,6 +244,8 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
       'product_id': widget.productDataId,
       'status': status,
       'money': money,
+      'taskassigntime': FieldValue.serverTimestamp(),
+      'done': done,
     });
 
     ScaffoldMessenger.of(context).showSnackBar(

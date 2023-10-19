@@ -70,7 +70,8 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Task Details'),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.redAccent,
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
