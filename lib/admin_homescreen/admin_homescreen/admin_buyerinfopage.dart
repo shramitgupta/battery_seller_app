@@ -31,12 +31,15 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
   String status = 'Task Assigned';
   double money = 0;
   String done = '';
+  DateTime? nextServiceDate;
+  final nextServiceDateController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     fetchEmployees();
     fetchAssignedEmployeeName(widget.productDataId);
+    fetchNextServiceDate(widget.productDataId);
   }
 
   Future<void> fetchAssignedEmployeeName(String productDataId) async {
@@ -51,6 +54,23 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
       final taskData = taskQuery.docs.first.data() as Map<String, dynamic>;
       setState(() {
         assignedEmployeeName = taskData['employee_name'];
+      });
+    }
+  }
+
+  Future<void> fetchNextServiceDate(String productDataId) async {
+    final productQuery = await FirebaseFirestore.instance
+        .collection('product_data')
+        .doc(productDataId)
+        .get();
+
+    if (productQuery.exists) {
+      final productData = productQuery.data() as Map<String, dynamic>;
+      setState(() {
+        nextServiceDate =
+            (productData['next_service_date'] as Timestamp?)?.toDate();
+        nextServiceDateController.text =
+            nextServiceDate?.toLocal().toString() ?? '';
       });
     }
   }
@@ -117,7 +137,32 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
               ElevatedButton(
                 onPressed: reassignTask,
                 child: Text('Reassign Task'),
-              )
+              ),
+            SizedBox(height: 20),
+            Text(
+              'Next Service Date:',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.grey,
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: nextServiceDateController,
+                    readOnly: true,
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () => _selectDate(context),
+                  child: Text('Change Date'),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -284,6 +329,69 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
         );
       }
     }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: nextServiceDate ?? DateTime.now(),
+      firstDate: DateTime.now(), // Restrict to today or future dates.
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != nextServiceDate) {
+      final bool confirmUpdate = await showConfirmationDialog(context);
+
+      if (confirmUpdate) {
+        setState(() {
+          nextServiceDate = picked;
+          nextServiceDateController.text = picked.toLocal().toString();
+        });
+
+        // Update the next service date in the product_data collection.
+        FirebaseFirestore.instance
+            .collection('product_data')
+            .doc(widget.productDataId)
+            .update({
+          'next_service': Timestamp.fromDate(picked),
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Next Service Date updated successfully.'),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<bool> showConfirmationDialog(BuildContext context) async {
+    return await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Confirm Update'),
+          content: Text('Do you want to update the Next Service Date?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User canceled the update.
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+                Navigator.of(context).pop(true);
+                Navigator.of(context).pop(true);
+                // User confirmed the update.
+              },
+              child: Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 
