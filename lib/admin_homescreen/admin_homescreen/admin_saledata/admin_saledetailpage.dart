@@ -40,27 +40,32 @@ class _SaleDetailsPageState extends State<SaleDetailsPage> {
               margin: const EdgeInsets.all(16),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 80 * heightRatio,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 16 * heightRatio),
-                      Text(
-                        'Buyer Name: ${widget.buyerName ?? ''}',
-                        style: TextStyle(fontSize: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 16 * heightRatio),
+                    Text(
+                      'Buyer Name: ${widget.buyerName ?? ''}',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Text(
-                        'Phone No: ${widget.phoneNo ?? ''}',
-                        style: TextStyle(fontSize: 16),
+                    ),
+                    Text(
+                      'Phone No: ${widget.phoneNo ?? ''}',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey,
                       ),
-                      Text(
-                        'Area: ${widget.area ?? ''}',
-                        style: TextStyle(fontSize: 16),
+                    ),
+                    Text(
+                      'Area: ${widget.area ?? ''}',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -103,27 +108,39 @@ class _SaleDetailsPageState extends State<SaleDetailsPage> {
 
                       return Card(
                         elevation: 5,
+                        margin: const EdgeInsets.all(8),
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(height: 16 * heightRatio),
                               Text(
                                 'Product Name: $productName',
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               Text(
                                 'Next Service: ${nextService.toDate().toLocal().toString().split(' ')[0]}',
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
                               ),
                               Text(
                                 'Purchase Date: $formattedDate',
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
                               ),
                               Text(
                                 'MFD: ${mfd.toDate().toLocal().toString().split(' ')[0]}',
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
                               ),
                             ],
                           ),
