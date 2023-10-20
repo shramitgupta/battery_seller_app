@@ -2,12 +2,6 @@ import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_sale
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
-  runApp(const MaterialApp(
-    home: AdminSaleData(),
-  ));
-}
-
 class AdminSaleData extends StatefulWidget {
   const AdminSaleData({Key? key}) : super(key: key);
 
@@ -36,6 +30,8 @@ class _AdminSaleDataState extends State<AdminSaleData> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.redAccent,
         title: const Text('Sale Data'),
         actions: <Widget>[
           IconButton(

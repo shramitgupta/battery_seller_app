@@ -1,3 +1,4 @@
+import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_saledata/admin_servicedetails.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -88,6 +89,7 @@ class _SaleDetailsPageState extends State<SaleDetailsPage> {
                   }
 
                   final productDocs = snapshot.data!.docs;
+
                   return ListView.builder(
                     shrinkWrap: true,
                     itemCount: productDocs.length,
@@ -100,49 +102,59 @@ class _SaleDetailsPageState extends State<SaleDetailsPage> {
                       final purchaseDate =
                           productData['purchase_date'] as Timestamp;
                       final mfd = productData['mfd'] as Timestamp;
-
+                      final documentId = productDocs[index].id;
                       // Convert the Timestamp to a DateTime
                       final purchaseDateTime = purchaseDate.toDate();
                       final formattedDate =
                           purchaseDateTime.toLocal().toString().split(' ')[0];
 
-                      return Card(
-                        elevation: 5,
-                        margin: const EdgeInsets.all(8),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Product Name: $productName',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  AdminServiceDetail(documentId: documentId),
+                            ),
+                          );
+                        },
+                        child: Card(
+                          elevation: 5,
+                          margin: const EdgeInsets.all(8),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Product Name: $productName',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'Next Service: ${nextService.toDate().toLocal().toString().split(' ')[0]}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
+                                Text(
+                                  'Next Service: ${nextService.toDate().toLocal().toString().split(' ')[0]}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'Purchase Date: $formattedDate',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
+                                Text(
+                                  'Purchase Date: $formattedDate',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'MFD: ${mfd.toDate().toLocal().toString().split(' ')[0]}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
+                                Text(
+                                  'MFD: ${mfd.toDate().toLocal().toString().split(' ')[0]}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       );
