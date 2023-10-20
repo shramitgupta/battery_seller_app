@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 class AdminEarning extends StatefulWidget {
   const AdminEarning({Key? key}) : super(key: key);
@@ -10,6 +10,7 @@ class AdminEarning extends StatefulWidget {
 
 class _AdminEarningState extends State<AdminEarning> {
   DateTime selectedDate = DateTime.now(); // Initially, show earnings for today
+  String selectedPeriod = 'Daily';
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +18,7 @@ class _AdminEarningState extends State<AdminEarning> {
       appBar: AppBar(
         title: Text('Admin Earnings'),
         centerTitle: true,
+        backgroundColor: Colors.redAccent,
       ),
       body: Column(
         children: [
@@ -44,6 +46,30 @@ class _AdminEarningState extends State<AdminEarning> {
               ),
             ),
           ),
+          ListTile(
+            title: Text(
+              'Selected Period',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            subtitle: DropdownButton(
+              value: selectedPeriod,
+              onChanged: (value) {
+                setState(() {
+                  selectedPeriod = value.toString();
+                });
+              },
+              items: <String>['Daily', 'Weekly', 'Monthly']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+          ),
           Expanded(
             child: StreamBuilder(
               stream: FirebaseFirestore.instance.collection('Task').snapshots(),
@@ -61,24 +87,28 @@ class _AdminEarningState extends State<AdminEarning> {
                 final taskDocs = snapshot.data!.docs;
 
                 double totalEarnings = 0;
-                double dailyEarnings = 0;
 
                 for (var taskDoc in taskDocs) {
                   final taskData = taskDoc.data();
                   final taskAssignTime =
                       (taskData['taskassigntime'] as Timestamp).toDate();
-                  final money = (taskData['money'] as int).toDouble();
+                  final money = (taskData['money'] as num).toDouble();
 
-                  totalEarnings += money;
-
-                  if (_isSameDay(taskAssignTime, selectedDate)) {
-                    dailyEarnings += money;
+                  if (selectedPeriod == 'Daily' &&
+                      _isSameDay(taskAssignTime, selectedDate)) {
+                    totalEarnings += money;
+                  } else if (selectedPeriod == 'Weekly' &&
+                      _isSameWeek(taskAssignTime, selectedDate)) {
+                    totalEarnings += money;
+                  } else if (selectedPeriod == 'Monthly' &&
+                      _isSameMonth(taskAssignTime, selectedDate)) {
+                    totalEarnings += money;
                   }
                 }
 
                 return AnimatedContainer(
-                  duration: Duration(seconds: 1), // Example animation duration
-                  curve: Curves.easeInOut, // Example animation curve
+                  duration: Duration(seconds: 1),
+                  curve: Curves.easeInOut,
                   padding: EdgeInsets.all(16),
                   alignment: Alignment.center,
                   child: Column(
@@ -87,10 +117,6 @@ class _AdminEarningState extends State<AdminEarning> {
                       EarningsCard(
                         title: 'Total Earnings',
                         earnings: totalEarnings,
-                      ),
-                      EarningsCard(
-                        title: 'Daily Earnings',
-                        earnings: dailyEarnings,
                       ),
                     ],
                   ),
@@ -101,6 +127,24 @@ class _AdminEarningState extends State<AdminEarning> {
         ],
       ),
     );
+  }
+
+  // Check if two dates are on the same day
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
+  // Check if two dates are in the same week
+  bool _isSameWeek(DateTime date1, DateTime date2) {
+    return date1.difference(date2).inDays >= 0 &&
+        date1.difference(date2).inDays < 7;
+  }
+
+  // Check if two dates are in the same month
+  bool _isSameMonth(DateTime date1, DateTime date2) {
+    return date1.year == date2.year && date1.month == date2.month;
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -116,12 +160,6 @@ class _AdminEarningState extends State<AdminEarning> {
         selectedDate = picked;
       });
     }
-  }
-
-  bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
   }
 }
 
