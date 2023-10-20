@@ -1,3 +1,4 @@
+import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_saledata/admin_saledetailpage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -80,41 +81,6 @@ class _AdminSaleDataState extends State<AdminSaleData> {
   }
 }
 
-class SaleDetailsPage extends StatelessWidget {
-  final String saleId;
-  final String? buyerName;
-  final String? phoneNo;
-  final String? area;
-
-  const SaleDetailsPage({
-    Key? key,
-    required this.saleId,
-    this.buyerName,
-    this.phoneNo,
-    this.area,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sale Details'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Sale ID: $saleId'),
-            Text('Buyer Name: ${buyerName ?? ''}'),
-            Text('Phone No: ${phoneNo ?? ''}'),
-            Text('Area: ${area ?? ''}'),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class SaleSearchDelegate extends SearchDelegate<DocumentSnapshot> {
   final List<DocumentSnapshot> _sales;
 
@@ -175,18 +141,20 @@ class SaleSearchDelegate extends SearchDelegate<DocumentSnapshot> {
       itemCount: results.length,
       itemBuilder: (context, index) {
         final sale = results[index];
-        return ListTile(
-          title: Text('Buyer Name: ${sale['buyer_name'] ?? ''}'),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Phone No: ${sale['phone_no'] ?? ''}'),
-              Text('Area: ${sale['area'] ?? ''}'),
-            ],
+        return Card(
+          child: ListTile(
+            title: Text('Buyer Name: ${sale['buyer_name'] ?? ''}'),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Phone No: ${sale['phone_no'] ?? ''}'),
+                Text('Area: ${sale['area'] ?? ''}'),
+              ],
+            ),
+            onTap: () {
+              close(context, sale);
+            },
           ),
-          onTap: () {
-            close(context, sale);
-          },
         );
       },
     );
