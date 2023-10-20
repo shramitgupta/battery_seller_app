@@ -1,6 +1,7 @@
 import 'package:battery_service_app/Auth/Admin_auth/adminlogin.dart';
-import 'package:battery_service_app/admin_homescreen/admin_homescreen/Admin_todayswork.dart';
-import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_salesform.dart';
+import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_saledata.dart';
+import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_todays_works/Admin_todayswork.dart';
+import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_sale/admin_salesform.dart';
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_tracking.dart';
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/employee_register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -168,7 +169,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               icon: Icons.pie_chart,
               label: "Sales Data",
               onPressed: () {
-                // Add your action for button 4
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AdminSaleData(),
+                  ),
+                );
               },
             ),
             buildGridButton(

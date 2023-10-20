@@ -1,4 +1,4 @@
-import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_buyerinfopage.dart';
+import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_todays_works/admin_buyerinfopage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
