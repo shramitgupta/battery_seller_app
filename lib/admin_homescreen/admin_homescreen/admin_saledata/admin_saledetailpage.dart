@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_saledata/admin_servicedetails.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -110,6 +112,8 @@ class _SaleDetailsPageState extends State<SaleDetailsPage> {
 
                       return GestureDetector(
                         onTap: () {
+                          log('dd   ' + documentId.toString());
+
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) =>

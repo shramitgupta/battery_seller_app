@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -39,7 +41,7 @@ class _AdminServiceDetailState extends State<AdminServiceDetail> {
           }
 
           final taskDocs = snapshot.data!.docs;
-
+          log(widget.documentId.toString());
           return ListView.builder(
             itemCount: taskDocs.length,
             itemBuilder: (context, index) {

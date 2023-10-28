@@ -31,18 +31,42 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Please enter a valid amount.'),
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.redAccent,
           ),
         );
         return;
       }
-      FirebaseFirestore.instance
-          .collection('Task')
-          .doc(widget.documentId)
-          .update({
-        'status': newStatus,
-        'money': amountInput,
-      }).then((_) {
+      // Calculate the date six months from now
+      final DateTime currentDate = DateTime.now();
+      final DateTime nextServiceDate = currentDate.add(Duration(days: 6 * 30));
+
+      // Update the 'Task' collection and the 'product_data' collection
+      FirebaseFirestore.instance.runTransaction((transaction) async {
+        DocumentReference taskRef = FirebaseFirestore.instance
+            .collection('Task')
+            .doc(widget.documentId);
+
+        DocumentSnapshot productDataSnapshot = await transaction.get(
+            FirebaseFirestore.instance
+                .collection('product_data')
+                .doc(widget.data['product_id']));
+
+        // Update the 'money' field in the 'Task' collection
+        transaction.update(taskRef, {
+          'status': newStatus,
+          'money': amountInput,
+          'done': 'done',
+        });
+
+        // Update the 'next_service' field in the 'product_data' collection
+        transaction.update(
+            FirebaseFirestore.instance
+                .collection('product_data')
+                .doc(widget.data['product_id']),
+            {
+              'next_service': nextServiceDate,
+            });
+
         Navigator.of(context).pop(); // Close the dialog
         Navigator.of(context).pop(); // Pop the current page
       }).catchError((error) {
@@ -68,6 +92,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('Task Details'),
         backgroundColor: Colors.redAccent,
@@ -161,14 +186,16 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                         onPressed: () {
                           showConfirmationDialog(context, 'Accepted');
                         },
-                        style: ElevatedButton.styleFrom(primary: Colors.green),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green),
                         child: Text('Accept'),
                       ),
                       ElevatedButton(
                         onPressed: () {
                           showConfirmationDialog(context, 'Reject');
                         },
-                        style: ElevatedButton.styleFrom(primary: Colors.red),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red),
                         child: Text('Reject'),
                       ),
                     ],
@@ -218,7 +245,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                           showConfirmationDialog(context, 'Done');
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.blue,
+                          backgroundColor: Colors.blue,
                         ),
                         child: Text('Done'),
                       ),

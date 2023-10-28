@@ -1,5 +1,8 @@
 import 'package:battery_service_app/Auth/Admin_auth/adminlogin.dart';
+import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_deletecustormer.dart';
+import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_deleteemployee.dart';
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_earning.dart';
+import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_employeeperformance.dart';
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_saledata/admin_saledata.dart';
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_todays_works/Admin_todayswork.dart';
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_sale/admin_salesform.dart';
@@ -194,7 +197,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               icon: Icons.people,
               label: "Employee Performance",
               onPressed: () {
-                // Add your action for button 6
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AdminEmployeePerformance(),
+                  ),
+                );
               },
             ),
             buildGridButton(
@@ -213,14 +221,24 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               icon: Icons.delete_forever,
               label: "Delete Customer",
               onPressed: () {
-                // Add your action for button 8
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AdminDeleteCustomer(),
+                  ),
+                );
               },
             ),
             buildGridButton(
               icon: Icons.person_remove,
               label: "Delete Employee",
               onPressed: () {
-                // Add your action for button 9
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AdminDeleteEmployee(),
+                  ),
+                );
               },
             ),
           ],
