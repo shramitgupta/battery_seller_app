@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_todays_works/admin_buyerinfopage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,7 +17,7 @@ class _AdminTodaysWorksState extends State<AdminTodaysWorks> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Today's Works",
           style: TextStyle(
             color: Colors.white,
@@ -53,13 +55,13 @@ class TodaysWorksList extends StatelessWidget {
       stream: FirebaseFirestore.instance.collection('product_data').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
+          return const Center(
               child: CircularProgressIndicator()); // Loading indicator
         }
 
         if (snapshot.hasError) {
-          print("Error: ${snapshot.error}");
-          return Center(
+          log("Error: ${snapshot.error}");
+          return const Center(
             child: Text("An error occurred while loading data."),
           );
         }
@@ -147,26 +149,26 @@ class ProductInfoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
-      margin: EdgeInsets.all(8),
+      margin: const EdgeInsets.all(8),
       child: ListTile(
         title: Text(
-          'Product Name:' + product.productName,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          'Product Name:${product.productName}',
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'MFD: ${_formatDate(product.mfd)}',
-              style: TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 14),
             ),
             Text(
               'Next Service Date: ${_formatDate(product.nextService)}',
-              style: TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 14),
             ),
             Text(
               'Purchase Date: ${_formatDate(product.purchaseDate)}',
-              style: TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 14),
             ),
           ],
         ),

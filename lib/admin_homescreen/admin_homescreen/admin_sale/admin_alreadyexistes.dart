@@ -316,6 +316,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
             saveProductData(
                 widget.id, productNameController.text); // Pass the product name
             Navigator.of(context).pop();
+            Navigator.of(context).pop();
           },
           child: Text('Save'),
         ),
@@ -350,13 +351,14 @@ class _AddProductDialogState extends State<AddProductDialog> {
     String purchaseDateString = DateFormat('dd-MM-yyyy').format(purchaseDate);
     String nextServiceDateString =
         DateFormat('dd-MM-yyyy').format(nextServiceDate);
-
+    String reason = 'Not Changed Yet';
     await FirebaseFirestore.instance.collection('product_data').add({
       'sale_id': id,
       'product_name': productName, // Use the passed product name
       'mfd': Timestamp.fromDate(mfdDate),
       'purchase_date': Timestamp.fromDate(purchaseDate),
       'next_service': Timestamp.fromDate(nextServiceDate),
+      'next_service_reason': reason,
     });
 
     setState(() {});

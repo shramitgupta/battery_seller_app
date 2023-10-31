@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class BuyerInformationPage extends StatefulWidget {
   final String buyerName;
@@ -67,8 +68,7 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
     if (productQuery.exists) {
       final productData = productQuery.data() as Map<String, dynamic>;
       setState(() {
-        nextServiceDate =
-            (productData['next_service_date'] as Timestamp?)?.toDate();
+        nextServiceDate = (productData['next_service'] as Timestamp?)?.toDate();
         nextServiceDateController.text =
             nextServiceDate?.toLocal().toString() ?? '';
       });
@@ -93,6 +93,7 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('Buyer Information'),
         backgroundColor: Colors.redAccent,
@@ -130,11 +131,19 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
               ),
             if (assignedEmployeeName == null)
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red[300],
+                  shape: const StadiumBorder(),
+                ),
                 onPressed: createTask,
                 child: Text('Create Task'),
               )
             else
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red[300],
+                  shape: const StadiumBorder(),
+                ),
                 onPressed: reassignTask,
                 child: Text('Reassign Task'),
               ),
@@ -158,6 +167,10 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
                   ),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red[300],
+                    shape: const StadiumBorder(),
+                  ),
                   onPressed: () => _selectDate(context),
                   child: Text('Change Date'),
                 ),
@@ -245,29 +258,28 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
   void reassignTask() {
     if (selectedEmployeeData != null) {
       showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Confirm Reassignment'),
-            content: Text('Do you want to reassign this task?'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('Cancel'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                child: Text('Confirm'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  _reassignTask();
-                },
-              ),
-            ],
-          );
-        },
-      );
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Confirm Reassignment'),
+              content: Text('Do you want to reassign this task?'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text('Confirm'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _reassignTask();
+                  },
+                ),
+              ],
+            );
+          });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -335,25 +347,24 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: nextServiceDate ?? DateTime.now(),
-      firstDate: DateTime.now(), // Restrict to today or future dates.
+      firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
 
     if (picked != null && picked != nextServiceDate) {
-      final bool confirmUpdate = await showConfirmationDialog(context);
-
-      if (confirmUpdate) {
+      final String reason = await askForReason(context);
+      if (reason.isNotEmpty) {
         setState(() {
           nextServiceDate = picked;
           nextServiceDateController.text = picked.toLocal().toString();
         });
 
-        // Update the next service date in the product_data collection.
         FirebaseFirestore.instance
             .collection('product_data')
             .doc(widget.productDataId)
             .update({
           'next_service': Timestamp.fromDate(picked),
+          'next_service_reason': reason,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -365,33 +376,42 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
     }
   }
 
-  Future<bool> showConfirmationDialog(BuildContext context) async {
-    return await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Confirm Update'),
-          content: Text('Do you want to update the Next Service Date?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false); // User canceled the update.
-              },
-              child: Text('Cancel'),
+  Future<String> askForReason(BuildContext context) async {
+    String reason = "";
+
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Enter Reason for Update"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  decoration: InputDecoration(labelText: "Reason"),
+                  onChanged: (value) {
+                    reason = value;
+                  },
+                ),
+              ],
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-                Navigator.of(context).pop(true);
-                Navigator.of(context).pop(true);
-                // User confirmed the update.
-              },
-              child: Text('Confirm'),
-            ),
-          ],
-        );
-      },
-    );
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(reason);
+                },
+                child: Text("Submit"),
+              ),
+            ],
+          );
+        });
+    return reason;
   }
 }
 

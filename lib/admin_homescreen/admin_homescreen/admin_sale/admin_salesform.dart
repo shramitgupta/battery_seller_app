@@ -27,7 +27,7 @@ class _AdminSalesFormState extends State<AdminSalesForm>
   int productFieldCount = 1;
   bool _isUploading = false;
   late TabController _tabController;
-
+  String reason = 'Not Changed Yet';
   bool _isLoading = false;
   @override
   void initState() {
@@ -148,6 +148,7 @@ class _AdminSalesFormState extends State<AdminSalesForm>
           'mfd': productData['mfd'],
           'purchase_date': productData['purchase_date'],
           'next_service': productData['next_service'],
+          'next_service_reason': reason,
         });
       }
 
