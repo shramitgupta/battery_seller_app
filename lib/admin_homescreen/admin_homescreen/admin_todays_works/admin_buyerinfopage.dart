@@ -32,6 +32,7 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
   String status = 'Task Assigned';
   double money = 0;
   String done = '';
+  String reason = '';
   DateTime? nextServiceDate;
   final nextServiceDateController = TextEditingController();
 
@@ -71,6 +72,7 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
         nextServiceDate = (productData['next_service'] as Timestamp?)?.toDate();
         nextServiceDateController.text =
             nextServiceDate?.toLocal().toString() ?? '';
+        reason = productData['next_service_reason'];
       });
     }
   }
@@ -107,6 +109,10 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
             _buildInfoItem("Address", widget.address),
             _buildInfoItem("Area", widget.area),
             _buildInfoItem("Phone Number", widget.phoneNo),
+            _buildInfoItem(
+              "Service Date:",
+              reason,
+            ),
             SizedBox(height: 20),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
