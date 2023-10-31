@@ -107,18 +107,25 @@ class TaskCard extends StatefulWidget {
 class _TaskCardState extends State<TaskCard> {
   @override
   Widget build(BuildContext context) {
+    final status = widget.data['status'];
+
+    // Determine the background color based on the status
+    Color tileColor = status == 'Done' ? Colors.green : Colors.white;
+
     return Card(
       elevation: 3,
       margin: EdgeInsets.all(10),
+      color: tileColor, // Set the background color here
       child: InkWell(
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => TaskDetailsPage(
-                  data: widget.data,
-                  documentId: widget.documentId,
-                  context: context),
+                data: widget.data,
+                documentId: widget.documentId,
+                context: context,
+              ),
             ),
           );
         },

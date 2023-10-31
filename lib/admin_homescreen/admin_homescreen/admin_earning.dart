@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AdminEarning extends StatefulWidget {
   const AdminEarning({Key? key}) : super(key: key);
@@ -37,6 +37,10 @@ class _AdminEarningState extends State<AdminEarning> {
               ),
             ),
             trailing: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red[300],
+                shape: const StadiumBorder(),
+              ),
               onPressed: () => _selectDate(context),
               child: Text(
                 'Select Date',
@@ -88,38 +92,58 @@ class _AdminEarningState extends State<AdminEarning> {
 
                 double totalEarnings = 0;
 
+                List<Widget> earningWidgets = [];
+
                 for (var taskDoc in taskDocs) {
                   final taskData = taskDoc.data();
                   final taskAssignTime =
-                      (taskData['taskassigntime'] as Timestamp).toDate();
-                  final money = (taskData['money'] as num).toDouble();
+                      (taskData['taskassigntime'] as Timestamp?)?.toDate();
+                  final money = (taskData['money'] as num?)?.toDouble();
+                  final taskName =
+                      (taskData['buyer_name'] as String?) ?? 'No Name';
 
-                  if (selectedPeriod == 'Daily' &&
-                      _isSameDay(taskAssignTime, selectedDate)) {
-                    totalEarnings += money;
-                  } else if (selectedPeriod == 'Weekly' &&
-                      _isSameWeek(taskAssignTime, selectedDate)) {
-                    totalEarnings += money;
-                  } else if (selectedPeriod == 'Monthly' &&
-                      _isSameMonth(taskAssignTime, selectedDate)) {
-                    totalEarnings += money;
+                  if (taskAssignTime != null && money != null) {
+                    if (selectedPeriod == 'Daily' &&
+                        _isSameDay(taskAssignTime, selectedDate)) {
+                      totalEarnings += money;
+                      earningWidgets.add(EarningTile(
+                        name: taskName,
+                        date: taskAssignTime,
+                        amount: money,
+                      ));
+                    } else if (selectedPeriod == 'Weekly' &&
+                        _isSameWeek(taskAssignTime, selectedDate)) {
+                      totalEarnings += money;
+                      earningWidgets.add(EarningTile(
+                        name: taskName,
+                        date: taskAssignTime,
+                        amount: money,
+                      ));
+                    } else if (selectedPeriod == 'Monthly' &&
+                        _isSameMonth(taskAssignTime, selectedDate)) {
+                      totalEarnings += money;
+                      earningWidgets.add(EarningTile(
+                        name: taskName,
+                        date: taskAssignTime,
+                        amount: money,
+                      ));
+                    }
                   }
                 }
 
-                return AnimatedContainer(
-                  duration: Duration(seconds: 1),
-                  curve: Curves.easeInOut,
-                  padding: EdgeInsets.all(16),
-                  alignment: Alignment.center,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      EarningsCard(
+                return Column(
+                  children: [
+                    Expanded(
+                      child: ListView(children: earningWidgets),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: EarningsCard(
                         title: 'Total Earnings',
                         earnings: totalEarnings,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 );
               },
             ),
@@ -129,20 +153,17 @@ class _AdminEarningState extends State<AdminEarning> {
     );
   }
 
-  // Check if two dates are on the same day
   bool _isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year &&
         date1.month == date2.month &&
         date1.day == date2.day;
   }
 
-  // Check if two dates are in the same week
   bool _isSameWeek(DateTime date1, DateTime date2) {
     return date1.difference(date2).inDays >= 0 &&
         date1.difference(date2).inDays < 7;
   }
 
-  // Check if two dates are in the same month
   bool _isSameMonth(DateTime date1, DateTime date2) {
     return date1.year == date2.year && date1.month == date2.month;
   }
@@ -163,6 +184,28 @@ class _AdminEarningState extends State<AdminEarning> {
   }
 }
 
+class EarningTile extends StatelessWidget {
+  final String name;
+  final DateTime date;
+  final double amount;
+
+  EarningTile({
+    required this.name,
+    required this.date,
+    required this.amount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(name),
+      subtitle: Text(
+        'Date: ${date.day}/${date.month}/${date.year}, Amount: ₹${amount.toStringAsFixed(2)}',
+      ),
+    );
+  }
+}
+
 class EarningsCard extends StatelessWidget {
   final String title;
   final double earnings;
@@ -173,17 +216,17 @@ class EarningsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 5,
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      margin: EdgeInsets.all(16),
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               title,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                color: Colors.redAccent,
               ),
             ),
             Text(
