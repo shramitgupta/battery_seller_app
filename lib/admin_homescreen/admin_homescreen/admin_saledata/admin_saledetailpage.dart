@@ -1,14 +1,15 @@
 import 'dart:developer';
 
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_saledata/admin_servicedetails.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SaleDetailsPage extends StatefulWidget {
   final String saleId;
   final String? buyerName;
   final String? phoneNo;
   final String? area;
+  final String? address;
 
   const SaleDetailsPage({
     Key? key,
@@ -16,6 +17,7 @@ class SaleDetailsPage extends StatefulWidget {
     this.buyerName,
     this.phoneNo,
     this.area,
+    this.address,
   }) : super(key: key);
 
   @override
@@ -24,11 +26,108 @@ class SaleDetailsPage extends StatefulWidget {
 
 class _SaleDetailsPageState extends State<SaleDetailsPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController buyerNameController = TextEditingController();
+  final TextEditingController phoneNoController = TextEditingController();
+  final TextEditingController areaController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+
+  // Flag to track whether the sale details have been updated
+  bool detailsUpdated = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the text controllers with the current data
+    buyerNameController.text = widget.buyerName ?? '';
+    phoneNoController.text = widget.phoneNo ?? '';
+    areaController.text = widget.area ?? '';
+    addressController.text = widget.address ?? '';
+  }
+
+  Future<void> updateSaleDetails() async {
+    if (_formKey.currentState!.validate()) {
+      // Update the sale details in Firestore
+      await _firestore.collection('saledata').doc(widget.saleId).update({
+        'buyer_name': buyerNameController.text,
+        'phone_no': phoneNoController.text,
+        'area': areaController.text,
+        'address': addressController.text,
+      });
+
+      // Set the detailsUpdated flag to true to notify the user
+      setState(() {
+        detailsUpdated = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Rest of your code
     final Size size = MediaQuery.of(context).size;
     final double heightRatio = size.height / 915;
     final double widthRatio = size.width / 412;
+    // Define a function to show an Edit Sale Details dialog
+    void showEditDialog() {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Edit Sale Details'),
+            content: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: buyerNameController,
+                    decoration: InputDecoration(labelText: 'Buyer Name'),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Buyer name cannot be empty';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: phoneNoController,
+                    decoration: InputDecoration(labelText: 'Phone No'),
+                    // Add validation as needed
+                  ),
+                  TextFormField(
+                    controller: areaController,
+                    decoration: InputDecoration(labelText: 'Area'),
+                    // Add validation as needed
+                  ),
+                  TextFormField(
+                    controller: addressController,
+                    decoration: InputDecoration(labelText: 'Address'),
+                    // Add validation as needed
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  updateSaleDetails();
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: Text('Save'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.redAccent,
@@ -68,6 +167,22 @@ class _SaleDetailsPageState extends State<SaleDetailsPage> {
                         color: Colors.grey,
                       ),
                     ),
+                    Text(
+                      'Address: ${widget.address ?? ''}',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: showEditDialog, // Show the Edit dialog
+                      child: Text('Edit'),
+                    ),
+                    if (detailsUpdated)
+                      Text('Details Updated Successfully',
+                          style: TextStyle(
+                            color: Colors.green,
+                          )),
                   ],
                 ),
               ),

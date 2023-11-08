@@ -66,6 +66,7 @@ class _AdminSaleDataState extends State<AdminSaleData> {
                     buyerName: sale['buyer_name'] as String?,
                     phoneNo: sale['phone_no'] as String?,
                     area: sale['area'] as String?,
+                    address: sale['address'] as String?,
                   ),
                 ));
               },
