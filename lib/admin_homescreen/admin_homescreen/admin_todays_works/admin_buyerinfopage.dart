@@ -92,12 +92,308 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
     });
   }
 
+  Future<void> _showConfirmationDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to do it yourselves?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Yes'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                updateDataAndServiceDate();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Function to update product data and next service date
+  // Function to update product data and next service date in Firebase
+  Future<void> updateDataAndServiceDate() async {
+    try {
+      // Update next_service_reason in the 'product_data' collection
+      await FirebaseFirestore.instance
+          .collection('product_data')
+          .doc(widget.productDataId)
+          .update({
+        'next_service_reason': 'Do it ourselves',
+      });
+
+      // Update next_service to the next 6th-month date
+      DateTime currentDate = DateTime.now();
+      DateTime nextServiceDate =
+          DateTime(currentDate.year, currentDate.month + 6, currentDate.day);
+
+      // Update the 'next_service' field in the document
+      await FirebaseFirestore.instance
+          .collection('product_data')
+          .doc(widget.productDataId)
+          .update({
+        'next_service': nextServiceDate,
+      });
+
+      // Update the UI or handle success as needed
+      setState(() {
+        nextServiceDateController.text =
+            DateFormat('yyyy-MM-dd').format(nextServiceDate);
+        reason = 'Do it ourselves';
+      });
+    } catch (error) {
+      // Handle errors here
+      print('Error updating data: $error');
+    }
+  }
+
+  Future<void> _showDateSelectionDialog() async {
+    DateTime? selectedDate = DateTime.now();
+
+    selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(DateTime.now().year + 5),
+    );
+
+    if (selectedDate != null) {
+      await _showConfirmationDialog2(selectedDate);
+    }
+  }
+
+  Future<void> _showConfirmationDialog2(DateTime selectedDate) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'Are you sure you want to choose this date for the next service?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Yes, update'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                updateDataAndServiceDate2(selectedDate);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+// Function to update product data and next service date in Firebase
+  Future<void> updateDataAndServiceDate2(DateTime selectedDate) async {
+    try {
+      // Update next_service_reason in the 'product_data' collection
+      await FirebaseFirestore.instance
+          .collection('product_data')
+          .doc(widget.productDataId)
+          .update({
+        'next_service_reason': 'Not now, later',
+      });
+
+      // Update next_service to the selected date
+      await FirebaseFirestore.instance
+          .collection('product_data')
+          .doc(widget.productDataId)
+          .update({
+        'next_service': selectedDate,
+      });
+
+      // Update the UI or handle success as needed
+      setState(() {
+        nextServiceDateController.text =
+            DateFormat('yyyy-MM-dd').format(selectedDate);
+        reason = 'Not now, later';
+      });
+    } catch (error) {
+      // Handle errors here
+      print('Error updating data: $error');
+    }
+  }
+
+  Future<void> _showDateSelectionDialog2() async {
+    DateTime? selectedDate = DateTime.now();
+
+    selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(DateTime.now().year + 5),
+    );
+
+    if (selectedDate != null) {
+      await _showConfirmationDialog3(selectedDate);
+    }
+  }
+
+  Future<void> _showConfirmationDialog3(DateTime selectedDate) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'Are you sure you want to choose this date for the next service?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Yes, update'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                updateDataAndServiceDate3(selectedDate);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+// Function to update product data and next service date in Firebase
+  Future<void> updateDataAndServiceDate3(DateTime selectedDate) async {
+    try {
+      // Update next_service_reason in the 'product_data' collection
+      await FirebaseFirestore.instance
+          .collection('product_data')
+          .doc(widget.productDataId)
+          .update({
+        'next_service_reason': 'Call not picked',
+      });
+
+      // Update next_service to the selected date
+      await FirebaseFirestore.instance
+          .collection('product_data')
+          .doc(widget.productDataId)
+          .update({
+        'next_service': selectedDate,
+      });
+
+      // Update the UI or handle success as needed
+      setState(() {
+        nextServiceDateController.text =
+            DateFormat('yyyy-MM-dd').format(selectedDate);
+        reason = 'Call not picked';
+      });
+    } catch (error) {
+      // Handle errors here
+      print('Error updating data: $error');
+    }
+  }
+
+  Future<void> _showConfirmationDialog4(String reason) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'Are you sure you want to update the reason to "$reason"?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Yes, update'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                updateNextServiceReason(reason);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> updateNextServiceReason(String reason) async {
+    try {
+      // Update next_service_reason in the 'product_data' collection
+      await FirebaseFirestore.instance
+          .collection('product_data')
+          .doc(widget.productDataId)
+          .update({
+        'next_service_reason': reason,
+      });
+
+      // Update the UI or handle success as needed
+      setState(() {
+        reason = 'Please send';
+      });
+    } catch (error) {
+      // Handle errors here
+      print('Error updating data: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('Buyer Information'),
+        centerTitle: true,
+        title: Text(
+          'Buyer Information',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.redAccent,
       ),
       body: Padding(
@@ -142,7 +438,10 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
                   shape: const StadiumBorder(),
                 ),
                 onPressed: createTask,
-                child: Text('Create Task'),
+                child: Text(
+                  'Create Task',
+                  style: TextStyle(color: Colors.white),
+                ),
               )
             else
               ElevatedButton(
@@ -178,7 +477,77 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
                     shape: const StadiumBorder(),
                   ),
                   onPressed: () => _selectDate(context),
-                  child: Text('Change Date'),
+                  child: Text(
+                    'Change Date',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 20),
+
+            // Styled buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    _showConfirmationDialog();
+                    // Handle "Do it ourselves" button click
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red[300],
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                  ),
+                  child: Text('Do it ourselves',
+                      style: TextStyle(fontSize: 16, color: Colors.white)),
+                ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    _showDateSelectionDialog();
+                    // Handle "Not now, later" button click
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red[300],
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                  ),
+                  child: Text('Not now, later',
+                      style: TextStyle(fontSize: 16, color: Colors.white)),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 10),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    _showConfirmationDialog4('Please send');
+                    // Handle "Please send" button click
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red[300],
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                  ),
+                  child: Text('Please send',
+                      style: TextStyle(fontSize: 16, color: Colors.white)),
+                ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    _showDateSelectionDialog2();
+                    // Handle "Call not picked" button click
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red[300],
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                  ),
+                  child: Text('Call not picked',
+                      style: TextStyle(fontSize: 16, color: Colors.white)),
                 ),
               ],
             ),
