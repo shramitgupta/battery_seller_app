@@ -4,6 +4,7 @@ import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_dele
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_earning.dart';
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_employeeperformance.dart';
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_saledata/admin_saledata.dart';
+import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_update/admin_taskupdate.dart';
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_todays_works/Admin_todayswork.dart';
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_sale/admin_salesform.dart';
 import 'package:battery_service_app/admin_homescreen/admin_homescreen/admin_tracking.dart';
@@ -237,6 +238,18 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const AdminDeleteEmployee(),
+                  ),
+                );
+              },
+            ),
+            buildGridButton(
+              icon: Icons.update,
+              label: "Tracking Update",
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AdminTaskUpdate(),
                   ),
                 );
               },

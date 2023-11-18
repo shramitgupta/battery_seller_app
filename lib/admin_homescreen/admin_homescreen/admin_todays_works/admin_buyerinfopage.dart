@@ -110,7 +110,7 @@ class _BuyerInformationPageState extends State<BuyerInformationPage> {
             _buildInfoItem("Area", widget.area),
             _buildInfoItem("Phone Number", widget.phoneNo),
             _buildInfoItem(
-              "Service Date:",
+              "Service Date Change Reason:",
               reason,
             ),
             SizedBox(height: 20),
